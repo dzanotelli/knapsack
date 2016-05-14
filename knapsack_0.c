@@ -88,3 +88,70 @@ void print_items(item **items)
                 items++;
         }
 }
+
+unsigned int factorial(int n)
+{
+        /*
+         * Return the factorial of *n*.
+         */
+        else if (n == 0) {
+                return 1;
+        }
+        else {
+                return n * factorial(n-1);
+        }
+}
+
+int **combinations(int *items, unsigned int k)
+{
+        /*
+         * Return a pointer to an array of int with all the possible
+         * combinations.
+         *
+         * arguments:
+         * ----------
+         * *items*
+         *     a pointer to a list of int, the last item must be NULL
+         *     The input list of integers which compute the combinations on.
+         *     This list must be long count(items)+1 since the last item
+         *     must be valorized to NULL (it marks the end of the list).
+         * *k*
+         *     unsigned int
+         *     The length of each combination subsets.
+         */
+        int n;
+        int total;
+        int **result;
+        int *combo_tmp;
+        int i;
+
+        /* FIXME
+         * n = count(items)
+         */
+
+        /* checks */
+        if (k > n) {
+                printf("Error: (k=%d) > (n=%d) ! Assuming k=n ...\n");
+                k = n;
+        }
+
+        /* total amount of combinations, init result pointer */
+        total = factorial(n) / factorial(k) * factorial(n-k);
+        result = malloc(sizeof(int*) * (total+1));
+
+        /* condition of termination */
+        if (items_count == 1 && k == 1) {
+                /* FIXME: return list with 1 elment = items */
+        }
+        else if (items_count > 1 && k == 1) {
+                /* FIXME
+                 * return item[0] + combination(items[1:], 1) (list)
+                 */
+        }
+        else {
+                /* FIXME:
+                 * for i=0; i<count(items)-k; i++
+                 *      return items[i] + combinations(items[i:], k-1) (list)
+                 */
+        }
+}
