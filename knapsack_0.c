@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define KNAPSACK_CAPCITY 10
+#define KNAPSACK_CAPACITY 10
 #define OBJ_COUNT 10
 #define OBJ_VALUE_MAX 10
 #define OBJ_WEIGHT_MAX 10
