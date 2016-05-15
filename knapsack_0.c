@@ -22,6 +22,12 @@ typedef struct {
 item **generate_items(int total_objects, int max_weight, int max_value);
 void print_line(int line_length);
 void print_items(item **items_to_print);
+int factorial (int number);
+size_t intlistlen(int *elements);
+size_t intlistlistlen(int **elements);
+int **combinations(int *elements, size_t k);
+int *cut_head(int *elements, size_t head_length);
+int *concat(int *list0, int *list1);
 
 /* -------------------------------------------------------------------------- */
 int main()
@@ -89,12 +95,12 @@ void print_items(item **items)
         }
 }
 
-unsigned int factorial(int n)
+int factorial(int n)
 {
         /*
          * Return the factorial of *n*.
          */
-        else if (n == 0) {
+        if (n == 0) {
                 return 1;
         }
         else {
@@ -102,7 +108,29 @@ unsigned int factorial(int n)
         }
 }
 
-int **combinations(int *items, unsigned int k)
+size_t intlistlen(int *items)
+{
+        /*
+         * Return the length of a list of integers. The last item of the list
+         * must be NULL.
+         */
+        size_t length = 0;
+        while (items++) length++;
+        return length;
+}
+
+size_t intlistlistlen(int **items)
+{
+        /*
+         * Return the length of a list of lists of integers. The last item of
+         * the list must be NULL.
+         */
+        size_t length = 0;
+        while (items++) length++;
+        return length;
+}
+
+int **combinations(int *items, size_t k)
 {
         /*
          * Return a pointer to an array of int with all the possible
@@ -119,8 +147,8 @@ int **combinations(int *items, unsigned int k)
          *     unsigned int
          *     The length of each combination subsets.
          */
-        int n;
-        int total;
+        size_t n = intlistlen(items);
+        size_t total;
         int **result;
         int *combo_tmp;
         int i;
@@ -131,7 +159,7 @@ int **combinations(int *items, unsigned int k)
 
         /* checks */
         if (k > n) {
-                printf("Error: (k=%d) > (n=%d) ! Assuming k=n ...\n");
+                printf("Warning: (k=%d) > (n=%d) ! Assuming k=n ...\n");
                 k = n;
         }
 
@@ -140,10 +168,15 @@ int **combinations(int *items, unsigned int k)
         result = malloc(sizeof(int*) * (total+1));
 
         /* condition of termination */
-        if (items_count == 1 && k == 1) {
-                /* FIXME: return list with 1 elment = items */
+        if (n == 1 && k == 1) {
+                result = malloc(sizeof(int*) * 2);
+                *result++ = items;
+                *result-- = NULL;
+
+                return result;
         }
-        else if (items_count > 1 && k == 1) {
+        else if (n > 1 && k == 1) {
+
                 /* FIXME
                  * return item[0] + combination(items[1:], 1) (list)
                  */
@@ -154,4 +187,52 @@ int **combinations(int *items, unsigned int k)
                  *      return items[i] + combinations(items[i:], k-1) (list)
                  */
         }
+}
+
+int *cut_head(int *items, size_t head_len)
+{
+        /*
+         * Cut *head_len* elements from the *items* head, and return the
+         * resulting list.
+         */
+        int i = 0;
+        size_t result_len = intlistlen(items) - head_len;
+        int *result = malloc(sizeof(int) * (result_len + 1));
+
+        while (i++ < head_len) {
+                items++;
+        }
+
+        i = 0;
+        while (*result++ = *items++) {
+                i++;
+        };
+
+        /* rewind result */
+        while (i--) result--;
+
+        return result;
+}
+
+int *concat(int *head, int *tail)
+{
+        /*
+         * Return a list built as *head* + *tail*.
+         */
+        int i = 0;
+        size_t head_len = intlistlen(head);
+        size_t tail_len = intlistlen(tail);
+        int *result = malloc(sizeof(int) * (head_len + tail_len + 1));
+
+        /* copy head */
+        while (*result++ = *head++) i++;
+        result--;
+
+        /* copy tail */
+        while (*result++ = *tail++) i++;
+
+        /* rewind result */
+        while (i--) result--;
+
+        return result;
 }
