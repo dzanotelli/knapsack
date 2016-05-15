@@ -152,10 +152,13 @@ int **combinations(int *items, size_t k)
         int **result;
         int *combo_tmp;
         int i;
+        int j;
+        int z;
         int *head;
         int *body;
         int **subcombo;
         size_t subcombo_len;
+        size_t sub_k;
 
         /* checks */
         if (k > n) {
@@ -175,34 +178,56 @@ int **combinations(int *items, size_t k)
 
                 return result;
         }
-        else if (n > 1 && k == 1) {
-                /* copy the head */
-                head = malloc(sizeof(int) * 2);
-                *head++ = *items;
-                head = NULL;
-                head--;
+        /* else if (n > 1 && k == 1) { */
+        /*         /\* copy the head *\/ */
+        /*         head = malloc(sizeof(int) * 2); */
+        /*         *head++ = *items; */
+        /*         head = NULL; */
+        /*         head--; */
 
+        /*         /\* extract the body *\/ */
+        /*         body = cut_head(items, 1); */
 
-                /* extract the body */
-                body = cut_head(items, 1);
+        /*         /\* compute the combinations of k=1 of the body *\/ */
+        /*         subcombo = combinations(body, 1); */
+        /*         subcombo_len = intlistlistlen(subcombo); */
 
-                /* compute the combinations of k=1 of the body */
-                subcombo = combinations(body, 1);
-                subcombo_len = intlistlistlen(subcombo);
+        /*         /\* return the sub-combinations with head ahead *\/ */
+        /*         for (i=0; i<subcombo_len; i++) { */
+        /*                 result[i] = concat(head, subcombo[i]); */
+        /*         } */
+        /*         result[i+1] = NULL; */
 
-                /* return the sub-combinations with head ahead */
-                for (i=0; i<subcombo_len; i++) {
-                        result[i] = concat(head, subcombo[i]);
+        /*         return result; */
+        /* } */
+        else {
+                z = 0;
+                for (i=0; i<(intlistlen(items) - k); i++) {
+                        /* copy the i-item as head */
+                        head = malloc(sizeof(int) * 2);
+                        *head++ = items[i];
+                        head = NULL;
+                        head--;
+
+                        /* extract the body */
+                        body = cut_head(items, i+1);
+
+                        /* compute the combinations of k-1 of the body */
+                        sub_k = k - 1;
+                        if (sub_k == 0) sub_k = 1;
+                        subcombo = combinations(body, sub_k);
+
+                        /* return the sub-combinations with head ahead */
+                        for (j=0; j<intlistlistlen(subcombo); j++) {
+                                *result++ = concat(head, subcombo[j]);
+                                z++;
+                        }
                 }
-                result[i+1] = NULL;
+                /* set terminator and rewind result */
+                *result = NULL;
+                while (z--) result--;
 
                 return result;
-        }
-        else {
-                /* FIXME:
-                 * for i=0; i<count(items)-k; i++
-                 *      return items[i] + combinations(items[i:], k-1) (list)
-                 */
         }
 }
 
