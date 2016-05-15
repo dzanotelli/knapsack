@@ -152,10 +152,10 @@ int **combinations(int *items, size_t k)
         int **result;
         int *combo_tmp;
         int i;
-
-        /* FIXME
-         * n = count(items)
-         */
+        int *head;
+        int *body;
+        int **subcombo;
+        size_t subcombo_len;
 
         /* checks */
         if (k > n) {
@@ -165,7 +165,7 @@ int **combinations(int *items, size_t k)
 
         /* total amount of combinations, init result pointer */
         total = factorial(n) / factorial(k) * factorial(n-k);
-        result = malloc(sizeof(int*) * (total+1));
+        result = malloc(sizeof(int*) * (total + 1));
 
         /* condition of termination */
         if (n == 1 && k == 1) {
@@ -176,10 +176,27 @@ int **combinations(int *items, size_t k)
                 return result;
         }
         else if (n > 1 && k == 1) {
+                /* copy the head */
+                head = malloc(sizeof(int) * 2);
+                *head++ = *items;
+                head = NULL;
+                head--;
 
-                /* FIXME
-                 * return item[0] + combination(items[1:], 1) (list)
-                 */
+
+                /* extract the body */
+                body = cut_head(items, 1);
+
+                /* compute the combinations of k=1 of the body */
+                subcombo = combinations(body, 1);
+                subcombo_len = intlistlistlen(subcombo);
+
+                /* return the sub-combinations with head ahead */
+                for (i=0; i<subcombo_len; i++) {
+                        result[i] = concat(head, subcombo[i]);
+                }
+                result[i+1] = NULL;
+
+                return result;
         }
         else {
                 /* FIXME:
@@ -193,7 +210,7 @@ int *cut_head(int *items, size_t head_len)
 {
         /*
          * Cut *head_len* elements from the *items* head, and return the
-         * resulting list.
+         * remaining list.
          */
         int i = 0;
         size_t result_len = intlistlen(items) - head_len;
