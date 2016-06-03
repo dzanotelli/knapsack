@@ -37,15 +37,45 @@ int main()
         item **all_items = generate_items(OBJ_COUNT, OBJ_WEIGHT_MAX,
                                           OBJ_VALUE_MAX);
 
+        int *indexes = malloc(sizeof(int) * (OBJ_COUNT+1));
+        int **indexes_combos;
+        int i;
+        int j;
+
         /* run */
         printf("The knapsack problem\n");
         print_line(60);
         printf("Available items:\n");
         print_items(all_items);
 
+        /* build the array of indexes, 0 to OBJ_COUNT-1 */
+        for (i=0; i<OBJ_COUNT; i++) {
+                indexes[i] = i;
+                printf("%d\n", i);
+        }
+        indexes[OBJ_COUNT] = INT_SENTINEL;
+
+        /* for (i=0; indexes[i] != INT_SENTINEL; i++) { */
+        /*         printf("%d\n", indexes[i]); */
+        /* } */
+
+        indexes_combos = combinations(indexes, OBJ_COUNT);
+
+        i = 0;
+        while (*indexes_combos) {
+                printf("%d: ", i++);
+                while (**indexes_combos != INT_SENTINEL) {
+                        printf("%d ", **indexes_combos);
+                        *indexes_combos++;
+                }
+                printf("\n");
+                indexes_combos++;
+        }
 
         /* free the memory */
         free(all_items);
+        free(indexes);
+        free(indexes_combos);
 }
 
 item **generate_items(int count, int max_weight, int max_value)
