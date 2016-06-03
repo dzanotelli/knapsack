@@ -13,6 +13,7 @@
 #define OBJ_COUNT 10
 #define OBJ_VALUE_MAX 10
 #define OBJ_WEIGHT_MAX 10
+#define INT_SENTINEL -1
 
 typedef struct {
         int weight;
@@ -112,10 +113,10 @@ size_t intlistlen(int *items)
 {
         /*
          * Return the length of a list of integers. The last item of the list
-         * must be NULL.
+         * must be INT_SENTINEL.
          */
         size_t length = 0;
-        while (items++) length++;
+        while (*items++ != INT_SENTINEL) length++;
         return length;
 }
 
@@ -133,8 +134,8 @@ size_t intlistlistlen(int **items)
 int **combinations(int *items, size_t k)
 {
         /*
-         * Return a pointer to an array of int with all the possible
-         * combinations.
+         * Return a pointer to an array of arrays of int with all the possible
+         * combinations (list of list of integers).
          *
          * arguments:
          * ----------
@@ -206,8 +207,7 @@ int **combinations(int *items, size_t k)
                         /* copy the i-item as head */
                         head = malloc(sizeof(int) * 2);
                         *head++ = items[i];
-                        head = NULL;
-                        head--;
+                        *head-- = INT_SENTINEL;
 
                         /* extract the body */
                         body = cut_head(items, i+1);
@@ -241,14 +241,14 @@ int *cut_head(int *items, size_t head_len)
         size_t result_len = intlistlen(items) - head_len;
         int *result = malloc(sizeof(int) * (result_len + 1));
 
+        /* skip head_len items */
         while (i++ < head_len) {
                 items++;
         }
 
+        /* copy the tail*/
         i = 0;
-        while (*result++ = *items++) {
-                i++;
-        };
+        while (*result++ = *items++) i++;
 
         /* rewind result */
         while (i--) result--;
