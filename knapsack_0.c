@@ -50,22 +50,33 @@ int main()
 
         /* build the array of indexes, 0 to OBJ_COUNT-1 */
         for (i=0; i<OBJ_COUNT; i++) {
-                indexes[i] = i;
+                indexes[i] = i+10;
                 printf("%d\n", i);
         }
         indexes[OBJ_COUNT] = INT_SENTINEL;
 
-        /* for (i=0; indexes[i] != INT_SENTINEL; i++) { */
-        /*         printf("%d\n", indexes[i]); */
-        /* } */
+        for (i=0; indexes[i] != INT_SENTINEL; i++) {
+                printf("indexes %d\n", indexes[i]);
+        }
 
-        indexes_combos = combinations(indexes, OBJ_COUNT);
+        indexes_combos = combinations(indexes, (size_t) OBJ_COUNT);
+
+        printf("pointer: %p\n", indexes_combos);
+        printf("value at pointer: %p\n", *indexes_combos);
+        printf("value at pointer value: %d\n", (**indexes_combos));
+        printf("ciclo su indexes_combos ora\n");
 
         i = 0;
-        while (*indexes_combos) {
+
+        printf("i=%d\n", i);
+
+        while (*indexes_combos != NULL) {
+                printf("ma qui ci arrivo..?");
+
                 printf("%d: ", i++);
+
                 while (**indexes_combos != INT_SENTINEL) {
-                        printf("%d ", **indexes_combos);
+                        printf("%d ", *indexes_combos);
                         *indexes_combos++;
                 }
                 printf("\n");
@@ -175,7 +186,7 @@ int **combinations(int *items, size_t k)
          *     This list must be long count(items)+1 since the last item
          *     must be valorized to NULL (it marks the end of the list).
          * *k*
-         *     unsigned int
+         *     size_t
          *     The length of each combination subsets.
          */
         size_t n = intlistlen(items);
@@ -191,9 +202,11 @@ int **combinations(int *items, size_t k)
         size_t subcombo_len;
         size_t sub_k;
 
+        printf("k=%d n=%d ", k, n);
+
         /* checks */
         if (k > n) {
-                printf("Warning: (k=%d) > (n=%d) ! Assuming k=n ...\n");
+                printf("Warning: (k=%d) > (n=%d) ! Assuming k=n ...\n", k, n);
                 k = n;
         }
 
@@ -201,11 +214,25 @@ int **combinations(int *items, size_t k)
         total = factorial(n) / factorial(k) * factorial(n-k);
         result = malloc(sizeof(int*) * (total + 1));
 
-        /* condition of termination */
-        if (n == 1 && k == 1) {
+        printf("total combos=%d\n", total);
+
+        /* condition of termination n == k*/
+        if (total == 1) {
                 result = malloc(sizeof(int*) * 2);
-                *result++ = items;
+
+                int *sub_result = malloc(sizeof(int) * (n+1));
+                while ((*sub_result++ = *items++) != INT_SENTINEL) {
+                        i++;
+                }
+
+                // rewind items
+                while (i--) items--;
+
+                //printf("qui\n");
+                *result++ = sub_result;
                 *result-- = NULL;
+
+                //printf("result_ptr=%p, *result_ptr=%p\n", result, *result);
 
                 return result;
         }
