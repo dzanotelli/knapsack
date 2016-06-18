@@ -26,6 +26,7 @@ void print_items(item **items_to_print);
 int factorial (int number);
 size_t intlistlen(int *elements);
 size_t intlistlistlen(int **elements);
+int **permutations(int *elements);
 
 /* -------------------------------------------------------------------------- */
 int main()
@@ -35,7 +36,7 @@ int main()
                                           OBJ_VALUE_MAX);
 
         int *indexes = malloc(sizeof(int) * (OBJ_COUNT+1));
-        int **indexes_combos;
+        int **indexes_perms;
         int i;
         int j;
 
@@ -56,34 +57,13 @@ int main()
                 printf("indexes %d\n", indexes[i]);
         }
 
-        indexes_combos = combinations(indexes, (size_t) OBJ_COUNT);
+        indexes_perms = permutations(indexes);
 
-        printf("pointer: %p\n", indexes_combos);
-        printf("value at pointer: %p\n", *indexes_combos);
-        printf("value at pointer value: %d\n", (**indexes_combos));
-        printf("ciclo su indexes_combos ora\n");
 
-        i = 0;
-
-        printf("i=%d\n", i);
-
-        while (*indexes_combos != NULL) {
-                printf("ma qui ci arrivo..?");
-
-                printf("%d: ", i++);
-
-                while (**indexes_combos != INT_SENTINEL) {
-                        printf("%d ", *indexes_combos);
-                        *indexes_combos++;
-                }
-                printf("\n");
-                indexes_combos++;
-        }
 
         /* free the memory */
         free(all_items);
         free(indexes);
-        free(indexes_combos);
 }
 
 item **generate_items(int count, int max_weight, int max_value)
@@ -167,4 +147,18 @@ size_t intlistlistlen(int **items)
         size_t length = 0;
         while (items++) length++;
         return length;
+}
+
+int** permutations(int *elements)
+{
+        int n;
+        int perm_max;
+
+        // compute the max permutations, where n = k
+        int n = intlistlen(elements);
+        int perm_max = factorial(n) / (factorial(n-k));
+        printf("max permutations: %d\n", perm_max);
+
+
+        return null;
 }
