@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #define KNAPSACK_CAPACITY 10
-#define OBJ_COUNT 10
+#define OBJ_COUNT 3
 #define OBJ_VALUE_MAX 10
 #define OBJ_WEIGHT_MAX 10
 #define INT_SENTINEL -1
@@ -51,31 +51,37 @@ int main()
         /* run */
         printf("The knapsack problem\n");
         print_line(60);
-        printf("Available items:\n");
-        print_items(all_items);
+        //printf("Available items:\n");
+        //print_items(all_items);
 
         /* build the array of indexes, 0 to OBJ_COUNT-1 */
         for (i=0; i<OBJ_COUNT; i++) {
                 indexes[i] = i;
-                printf("%d\n", i);
+                //printf("%d\n", i);
         }
         indexes[OBJ_COUNT] = INT_SENTINEL;
 
-        print_line(40);
-        for (i=0; indexes[i] != INT_SENTINEL; i++) {
-                printf("indexes %d\n", indexes[i]);
-        }
-
-        print_line(40);
-        int *others = list_without_item(indexes, 0);
-        for (i=0; others[i] != INT_SENTINEL; i++) {
-                printf("others %d\n", others[i]);
-        }
-
-
+        /* print_line(40); */
+        /* for (i=0; indexes[i] != INT_SENTINEL; i++) { */
+        /*         printf("indexes %d\n", indexes[i]); */
+        /* } */
 
         /* compute all the permutations on the indexes */
         indexes_perms = permutations_keqn(indexes);
+        int result_count = 0;
+        int list_count = 0;
+        while (*indexes_perms) {
+                printf("result %d:\n", result_count++);
+                list_count = 0;
+
+                while (**indexes_perms != INT_SENTINEL) {
+                        printf("\titem %d: %d\n",
+                               list_count++,
+                               **indexes_perms);
+                        (*indexes_perms)++;
+                }
+                indexes_perms++;
+        }
 
 
 
@@ -192,14 +198,29 @@ int** permutations_keqn(int *elements)
          */
         int n;
         int perm_max;
+        int **result = NULL;
+        int *list = NULL;
 
         // compute the max permutations, where n = k
         n = intlistlen(elements);
         perm_max = factorial(n);
-
         printf("max permutations: %d\n", perm_max);
 
+        // termination condition
+        if (intlistlen(elements) == 1) {
+                // copy elements to list
+                list = malloc(sizeof(int) * 2);
+                *list++ = elements[0];
+                *list-- = INT_SENTINEL;
 
+                // save list as result number 0
+                result = malloc(sizeof(int*) * 2);
+                *result++ = list;
+                *result-- = NULL;
+                return result;
+        }
+
+        // recursion
 
 
 
