@@ -28,6 +28,7 @@ size_t intlistlen(int *elements);
 size_t intlistlistlen(int **elements);
 int **permutations_keqn(int *elements);
 int *list_without_item(int *items, int i);
+int *concat_int_lists(int *first_list, int *second_list);
 
 /* -------------------------------------------------------------------------- */
 int main()
@@ -66,6 +67,15 @@ int main()
         /*         printf("indexes %d\n", indexes[i]); */
         /* } */
 
+        int uno[4] = {11, 22, 33, INT_SENTINEL};
+        int due[4] = {5, 6, 7, INT_SENTINEL};
+        int *tre = concat_int_lists(uno, due);
+        while (*tre != INT_SENTINEL) {
+                printf("%d\t", *tre++);
+        }
+        return 0;
+
+
         /* compute all the permutations on the indexes */
         indexes_perms = permutations_keqn(indexes);
         int result_count = 0;
@@ -88,6 +98,8 @@ int main()
         /* free the memory */
         free(all_items);
         free(indexes);
+
+        return 0;
 }
 
 item **generate_items(int count, int max_weight, int max_value)
@@ -191,6 +203,47 @@ int *list_without_item(int *items, int i)
         return result;
 }
 
+int *concat_int_lists(int* list0, int* list1)
+{
+        int len0 = intlistlen(list0);
+        int len1 = intlistlen(list1);
+        int *result = malloc(sizeof(int) * (len0 + len1 + 1));
+        int count = 0;
+
+        printf("len0=%d len1=%d\n", len0, len1);
+
+        while ((*result++ = *list0++) != INT_SENTINEL) {
+                count++;
+        }
+        printf("last result = %d\n", *result);
+        printf("count=%d\n", count);
+        result--;
+
+        printf("last result = %d\n", *result);
+
+        printf("count=%d\n", count);
+
+        while ((*result++ = *list1++) != INT_SENTINEL) {
+                count++;
+        }
+
+        printf("last result = %d\n", *result);
+
+        printf("count=%d\n", count);
+
+
+
+        // rewind pointer
+        while (count <= 0) {
+                result--;
+                count--;
+        }
+
+        printf("before ret result = %d\n", *result);
+
+        return result;
+}
+
 int** permutations_keqn(int *elements)
 {
         /* Return a list of list of integers with all the possibile
@@ -200,6 +253,10 @@ int** permutations_keqn(int *elements)
         int perm_max;
         int **result = NULL;
         int *list = NULL;
+        int i;
+        int j;
+        int *others;
+        int **sub_perm;
 
         // compute the max permutations, where n = k
         n = intlistlen(elements);
@@ -221,7 +278,16 @@ int** permutations_keqn(int *elements)
         }
 
         // recursion
+        result = malloc(sizeof(int*) * (perm_max + 1));
+        for (i = 0; i < n; i++) {
+                others = list_without_item(elements, i);
+                sub_perm = permutations_keqn(others);
 
+                // add to results
+                // fixme
+
+
+        }
 
 
         return NULL;
