@@ -26,17 +26,25 @@ void print_items(item **items_to_print);
 int factorial (int number);
 size_t intlistlen(int *elements);
 size_t intlistlistlen(int **elements);
-int **permutations(int *elements);
+int **permutations_keqn(int *elements);
+int *list_without_item(int *items, int i);
 
 /* -------------------------------------------------------------------------- */
 int main()
 {
-        /* variable definition */
+        /* The idea is:
+         * 1/ compute all the permutations where k = n on the indexes
+         * 2/ one permutaton by one, item by item, compute the sum of the values
+         *    until the weight constraint is reached and save the payoff
+         *    somewhere (discarding the trailing items which will exceed the
+         *    knapsack capacity)
+         * 3/ compare the computed payoffs and keep the highest
+         */
         item **all_items = generate_items(OBJ_COUNT, OBJ_WEIGHT_MAX,
                                           OBJ_VALUE_MAX);
 
         int *indexes = malloc(sizeof(int) * (OBJ_COUNT+1));
-        int **indexes_perms;
+        int **indexes_perms = NULL;
         int i;
         int j;
 
@@ -48,16 +56,26 @@ int main()
 
         /* build the array of indexes, 0 to OBJ_COUNT-1 */
         for (i=0; i<OBJ_COUNT; i++) {
-                indexes[i] = i+10;
+                indexes[i] = i;
                 printf("%d\n", i);
         }
         indexes[OBJ_COUNT] = INT_SENTINEL;
 
+        print_line(40);
         for (i=0; indexes[i] != INT_SENTINEL; i++) {
                 printf("indexes %d\n", indexes[i]);
         }
 
-        indexes_perms = permutations(indexes);
+        print_line(40);
+        int *others = list_without_item(indexes, 0);
+        for (i=0; others[i] != INT_SENTINEL; i++) {
+                printf("others %d\n", others[i]);
+        }
+
+
+
+        /* compute all the permutations on the indexes */
+        indexes_perms = permutations_keqn(indexes);
 
 
 
@@ -68,8 +86,7 @@ int main()
 
 item **generate_items(int count, int max_weight, int max_value)
 {
-        /*
-         * Generate *count* random items with a weight between 1 and
+        /* Generate *count* random items with a weight between 1 and
          * *max_weight* and a value between 1 and *max_value*
          */
         int i;
@@ -89,8 +106,7 @@ item **generate_items(int count, int max_weight, int max_value)
 
 void print_line(int length)
 {
-        /*
-         * Just print out *length* number of '-'.
+        /* Just print out *length* number of '-'.
          */
         int i = 0;
         while (i++ <= length) printf("-");
@@ -99,8 +115,7 @@ void print_line(int length)
 
 void print_items(item **items)
 {
-        /*
-         * Print a table with the items. Just three cols: id, weight, value.
+        /* Print a table with the items. Just three cols: id, weight, value.
          */
         int i = 0;
 
@@ -116,8 +131,7 @@ void print_items(item **items)
 
 int factorial(int n)
 {
-        /*
-         * Return the factorial of *n*.
+        /* Return the factorial of *n*.
          */
         if (n == 0) {
                 return 1;
@@ -129,8 +143,7 @@ int factorial(int n)
 
 size_t intlistlen(int *items)
 {
-        /*
-         * Return the length of a list of integers. The last item of the list
+        /* Return the length of a list of integers. The last item of the list
          * must be INT_SENTINEL.
          */
         size_t length = 0;
@@ -140,8 +153,7 @@ size_t intlistlen(int *items)
 
 size_t intlistlistlen(int **items)
 {
-        /*
-         * Return the length of a list of lists of integers. The last item of
+        /* Return the length of a list of lists of integers. The last item of
          * the list must be NULL.
          */
         size_t length = 0;
@@ -149,16 +161,47 @@ size_t intlistlistlen(int **items)
         return length;
 }
 
-int** permutations(int *elements)
+
+int *list_without_item(int *items, int i)
 {
+        /* Return *items* without the *i*-nth element.
+         */
+        int items_len = intlistlen(items);
+        int *result = malloc(sizeof(int) * items_len);
+        int j = 0;
+
+        if (i > (items_len - 1)) {
+                i = items_len - 1;
+        }
+
+        while ((*result++ = items[j]) != INT_SENTINEL) {
+                if (j == i) result--;
+                j++;
+        }
+
+        // rewind results
+        while (j--) result--;
+
+        return result;
+}
+
+int** permutations_keqn(int *elements)
+{
+        /* Return a list of list of integers with all the possibile
+         * permutantions of *elements* where k = n.
+         */
         int n;
         int perm_max;
 
         // compute the max permutations, where n = k
-        int n = intlistlen(elements);
-        int perm_max = factorial(n) / (factorial(n-k));
+        n = intlistlen(elements);
+        perm_max = factorial(n);
+
         printf("max permutations: %d\n", perm_max);
 
 
-        return null;
+
+
+
+        return NULL;
 }
