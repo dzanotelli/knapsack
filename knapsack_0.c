@@ -93,8 +93,6 @@ int main()
                 indexes_perms++;
         }
 
-
-
         /* free the memory */
         free(all_items);
         free(indexes);
@@ -205,6 +203,8 @@ int *list_without_item(int *items, int i)
 
 int *concat_int_lists(int* list0, int* list1)
 {
+        /* Concat *list0* and *list1*, lists of integers.
+         */
         int len0 = intlistlen(list0);
         int len1 = intlistlen(list1);
         int *result = malloc(sizeof(int) * (len0 + len1 + 1));
@@ -212,34 +212,21 @@ int *concat_int_lists(int* list0, int* list1)
 
         printf("len0=%d len1=%d\n", len0, len1);
 
-        while ((*result++ = *list0++) != INT_SENTINEL) {
+        // copy list 0
+        while (*list0 != INT_SENTINEL) {
+                *result++ = *list0++;
                 count++;
         }
-        printf("last result = %d\n", *result);
-        printf("count=%d\n", count);
-        result--;
-
-        printf("last result = %d\n", *result);
-
-        printf("count=%d\n", count);
-
+        // copy list 1
         while ((*result++ = *list1++) != INT_SENTINEL) {
                 count++;
         }
 
-        printf("last result = %d\n", *result);
-
-        printf("count=%d\n", count);
-
-
-
-        // rewind pointer
-        while (count <= 0) {
+        // rewind result
+        count++;
+        while (count--) {
                 result--;
-                count--;
         }
-
-        printf("before ret result = %d\n", *result);
 
         return result;
 }
