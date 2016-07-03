@@ -2,13 +2,14 @@
 
 BIN_DIR=bin
 TARGETS=all clean rebuild knapsack_0
+DEBUG_FLAG="-ggdb"
 
 usage:
 	@echo "Available targets:" $(TARGETS) "\n(doing nothing)"
 
 knapsack_0: bin_dir
 	@echo "Building knapsack_0 ..."
-	@gcc -o $(BIN_DIR)/knapsack_0 knapsack_0.c
+	@gcc $(DEBUG_FLAG) knapsack_0.c -o $(BIN_DIR)/knapsack_0
 
 bin_dir:
 	@test -d $(BIN_DIR) || \
