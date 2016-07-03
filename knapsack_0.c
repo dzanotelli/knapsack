@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #define KNAPSACK_CAPACITY 10
-#define OBJ_COUNT 3
+#define OBJ_COUNT 10
 #define OBJ_VALUE_MAX 10
 #define OBJ_WEIGHT_MAX 10
 #define INT_SENTINEL -1
@@ -69,6 +69,9 @@ int main()
 
         /* compute all the permutations on the indexes */
         indexes_perms = permutations_keqn(indexes);
+
+        printf("ok ho le perm\n");
+
         int result_count = 0;
         int list_count = 0;
         while (*indexes_perms) {
@@ -164,7 +167,7 @@ size_t intlistlistlen(int **items)
          * the list must be NULL.
          */
         size_t length = 0;
-        while (items++) length++;
+        while (*items++) length++;
         return length;
 }
 
@@ -201,8 +204,6 @@ int *concat_int_lists(int* list0, int* list1)
         int *result = malloc(sizeof(int) * (len0 + len1 + 1));
         int count = 0;
 
-        printf("len0=%d len1=%d\n", len0, len1);
-
         // copy list 0
         while (*list0 != INT_SENTINEL) {
                 *result++ = *list0++;
@@ -233,6 +234,7 @@ int** permutations_keqn(int *elements)
         int *list = NULL;
         int i;
         int j;
+        int k;
         int *others;
         int **sub_perm;
         size_t sub_perm_len;
@@ -241,32 +243,26 @@ int** permutations_keqn(int *elements)
         // compute the max permutations, where n = k
         n = intlistlen(elements);
         perm_max = factorial(n);
-        printf("max permutations: %d\n", perm_max);
+        //printf("max permutations: %d\n", perm_max);
 
         // termination condition
         if (intlistlen(elements) == 1) {
-                printf("recursion term condition!\n");
+                //printf("recursion term condition!\n");
 
                 // copy elements to list
                 list = malloc(sizeof(int) * 2);
-                printf("1");
                 list[0] = elements[0];
-                printf("2");
                 list[1] = INT_SENTINEL;
-                printf("3");
-
-                printf("aaaaaaaaaaa");
 
                 // save list as result number 0
                 result = malloc(sizeof(int*) * 2);
                 result[0] = list;
                 result[1] = NULL;
-                printf("bbbbbbb");
                 return result;
         }
 
         // recursion
-        printf("recursion...\n");
+        //printf("recursion ...\n");
 
         result = malloc(sizeof(int*) * (perm_max + 1));
         for (i = 0; i < n; i++) {
@@ -277,7 +273,7 @@ int** permutations_keqn(int *elements)
                 // add to results
                 one_item_list[0] = elements[i];
                 for (j=0; j<sub_perm_len; j++) {
-                        printf("[n=%d]: i=%d j=%d\n", n, i, j);
+                        //printf("[n=%d]: i=%d j=%d\n", n, i, j);
 
                         *result++ = concat_int_lists(one_item_list,
                                                      sub_perm[j]);
@@ -286,9 +282,10 @@ int** permutations_keqn(int *elements)
         *result = NULL;
 
         // rewind result
-        printf("alla fine i=%d e j=%d\n", i, j);
+        //printf("alla fine i=%d e j=%d\n", i, j);
+        for (k=0; k<i*j; k++) {
+                result --;
+        }
 
-
-
-        return NULL;
+        return result;
 }
