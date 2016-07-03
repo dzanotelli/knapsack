@@ -53,8 +53,8 @@ int main()
         /* run */
         printf("The knapsack problem\n");
         print_line(60);
-        //printf("Available items:\n");
-        //print_items(all_items);
+        printf("Available items:\n");
+        print_items(all_items);
 
         /* build the array of indexes, 0 to OBJ_COUNT-1 */
         for (i=0; i<OBJ_COUNT; i++) {
@@ -69,7 +69,7 @@ int main()
         /* } */
 
         /* compute all the permutations on the indexes */
-        indexes_perms = permutations_keqn(indexes);
+        //indexes_perms = permutations_keqn(indexes);
 
         /* int result_count = 0; */
         /* int list_count = 0; */
@@ -86,7 +86,11 @@ int main()
         /*         indexes_perms++; */
         /* } */
 
-
+        // test payoff func:
+        int v = 0;
+        int test_perm[] = {0,1,2,3,4,5,6,7,8,9};
+        v = payoff(all_items, test_perm, KNAPSACK_CAPACITY);
+        printf("payoff value = %d\n", v);
 
 
 
@@ -302,9 +306,10 @@ int payoff(item **items, int *perm, int capacity)
         int actual_value = 0;
         int actual_weight = 0;
 
-        while (*perm) {
+        while (*perm != INT_SENTINEL) {
                 item = items[*perm];
 
+                // add item value if it weight doesnt exceed the capacity
                 if ((actual_weight + item->weight) <= capacity) {
                         actual_value+= item->value;
                         actual_weight+= item->weight;
