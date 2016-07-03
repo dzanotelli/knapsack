@@ -29,6 +29,7 @@ size_t intlistlistlen(int **elements);
 int **permutations_keqn(int *elements);
 int *list_without_item(int *items, int i);
 int *concat_int_lists(int *first_list, int *second_list);
+int payoff(item **elements, int *permutation, int capacity);
 
 /* -------------------------------------------------------------------------- */
 int main()
@@ -70,22 +71,24 @@ int main()
         /* compute all the permutations on the indexes */
         indexes_perms = permutations_keqn(indexes);
 
-        printf("ok ho le perm\n");
+        /* int result_count = 0; */
+        /* int list_count = 0; */
+        /* while (*indexes_perms) { */
+        /*         printf("result %d:\n", result_count++); */
+        /*         list_count = 0; */
 
-        int result_count = 0;
-        int list_count = 0;
-        while (*indexes_perms) {
-                printf("result %d:\n", result_count++);
-                list_count = 0;
+        /*         while (**indexes_perms != INT_SENTINEL) { */
+        /*                 printf("\titem %d: %d\n", */
+        /*                        list_count++, */
+        /*                        **indexes_perms); */
+        /*                 (*indexes_perms)++; */
+        /*         } */
+        /*         indexes_perms++; */
+        /* } */
 
-                while (**indexes_perms != INT_SENTINEL) {
-                        printf("\titem %d: %d\n",
-                               list_count++,
-                               **indexes_perms);
-                        (*indexes_perms)++;
-                }
-                indexes_perms++;
-        }
+
+
+
 
         /* free the memory */
         free(all_items);
@@ -288,4 +291,30 @@ int** permutations_keqn(int *elements)
         }
 
         return result;
+}
+
+int payoff(item **items, int *perm, int capacity)
+{
+        /* Compute the value of a permutation (integer), constraint is the
+         * knapsack capacity.
+         */
+        item *item;
+        int actual_value = 0;
+        int actual_weight = 0;
+
+        while (*perm) {
+                item = items[*perm];
+
+                if ((actual_weight + item->weight) <= capacity) {
+                        actual_value+= item->value;
+                        actual_weight+= item->weight;
+                }
+                else {
+                        break;
+                }
+
+                perm++;
+        }
+
+        return actual_value;
 }
