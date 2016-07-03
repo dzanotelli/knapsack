@@ -29,7 +29,7 @@ size_t intlistlistlen(int **elements);
 int **permutations_keqn(int *elements);
 int *list_without_item(int *items, int i);
 int *concat_int_lists(int *first_list, int *second_list);
-int payoff(item **elements, int *permutation, int capacity);
+int payoff(item **elements, int *permutation, int capacity, int *how_many);
 
 /* -------------------------------------------------------------------------- */
 int main()
@@ -49,54 +49,60 @@ int main()
         int **indexes_perms = NULL;
         int i;
         int j;
+        int actual_value = 0;
+        int best_value = 0;
+        int chosen_perm_index = 0;
+        int *actual_quantity = malloc(sizeof(int));
+        int chosen_quantity;
+        int perm_max;
 
         /* run */
+        print_line(60);
         printf("The knapsack problem\n");
         print_line(60);
+        printf("Configuration:\n");
+        printf("\tknapsack capacity: %d\n", KNAPSACK_CAPACITY);
+        printf("\tobjects pool: %d\n", OBJ_COUNT);
+        printf("\tmax object value: %d\n", OBJ_VALUE_MAX);
+        printf("\tmax object weigth: %d\n", OBJ_WEIGHT_MAX);
+
         printf("Available items:\n");
         print_items(all_items);
 
         /* build the array of indexes, 0 to OBJ_COUNT-1 */
         for (i=0; i<OBJ_COUNT; i++) {
                 indexes[i] = i;
-                //printf("%d\n", i);
         }
         indexes[OBJ_COUNT] = INT_SENTINEL;
 
-        /* print_line(40); */
-        /* for (i=0; indexes[i] != INT_SENTINEL; i++) { */
-        /*         printf("indexes %d\n", indexes[i]); */
-        /* } */
-
         /* compute all the permutations on the indexes */
-        //indexes_perms = permutations_keqn(indexes);
+        indexes_perms = permutations_keqn(indexes);
 
-        /* int result_count = 0; */
-        /* int list_count = 0; */
-        /* while (*indexes_perms) { */
-        /*         printf("result %d:\n", result_count++); */
-        /*         list_count = 0; */
+        /* compute the payoffs and choose the best one */
+        perm_max = factorial(OBJ_COUNT);
+        for (i=0; i<perm_max; i++) {
+                actual_value = payoff(all_items,
+                                      indexes_perms[i],
+                                      KNAPSACK_CAPACITY,
+                                      actual_quantity);
 
-        /*         while (**indexes_perms != INT_SENTINEL) { */
-        /*                 printf("\titem %d: %d\n", */
-        /*                        list_count++, */
-        /*                        **indexes_perms); */
-        /*                 (*indexes_perms)++; */
-        /*         } */
-        /*         indexes_perms++; */
-        /* } */
+                if (actual_value > best_value) {
+                        best_value = actual_value;
+                        chosen_perm_index = i;
+                        chosen_quantity = *actual_quantity;
+                }
+        }
 
-        // test payoff func:
-        int v = 0;
-        int test_perm[] = {0,1,2,3,4,5,6,7,8,9};
-        v = payoff(all_items, test_perm, KNAPSACK_CAPACITY);
-        printf("payoff value = %d\n", v);
-
-
+        printf("The chosen payoff is [ ");
+        for (i=0; i<chosen_quantity; i++) {
+                printf("%d ", indexes_perms[chosen_perm_index][i]);
+        }
+        printf("] with a value of %d.\n", best_value);
 
         /* free the memory */
         free(all_items);
         free(indexes);
+        free(actual_quantity);
 
         return 0;
 }
@@ -178,7 +184,6 @@ size_t intlistlistlen(int **items)
         return length;
 }
 
-
 int *list_without_item(int *items, int i)
 {
         /* Return *items* without the *i*-nth element.
@@ -254,8 +259,6 @@ int** permutations_keqn(int *elements)
 
         // termination condition
         if (intlistlen(elements) == 1) {
-                //printf("recursion term condition!\n");
-
                 // copy elements to list
                 list = malloc(sizeof(int) * 2);
                 list[0] = elements[0];
@@ -269,8 +272,6 @@ int** permutations_keqn(int *elements)
         }
 
         // recursion
-        //printf("recursion ...\n");
-
         result = malloc(sizeof(int*) * (perm_max + 1));
         for (i = 0; i < n; i++) {
                 others = list_without_item(elements, i);
@@ -280,8 +281,6 @@ int** permutations_keqn(int *elements)
                 // add to results
                 one_item_list[0] = elements[i];
                 for (j=0; j<sub_perm_len; j++) {
-                        //printf("[n=%d]: i=%d j=%d\n", n, i, j);
-
                         *result++ = concat_int_lists(one_item_list,
                                                      sub_perm[j]);
                 }
@@ -289,7 +288,6 @@ int** permutations_keqn(int *elements)
         *result = NULL;
 
         // rewind result
-        //printf("alla fine i=%d e j=%d\n", i, j);
         for (k=0; k<i*j; k++) {
                 result --;
         }
@@ -297,22 +295,28 @@ int** permutations_keqn(int *elements)
         return result;
 }
 
-int payoff(item **items, int *perm, int capacity)
+int payoff(item **items, int *perm, int capacity, int *how_many)
 {
         /* Compute the value of a permutation (integer), constraint is the
-         * knapsack capacity.
+         * knapsack capacity. Save into *how_many* the number of the first
+         * items which contribute to generate the value.
          */
         item *item;
         int actual_value = 0;
         int actual_weight = 0;
 
+        (*how_many) = 0;
         while (*perm != INT_SENTINEL) {
                 item = items[*perm];
 
                 // add item value if it weight doesnt exceed the capacity
                 if ((actual_weight + item->weight) <= capacity) {
+                        // save value and weigth
                         actual_value+= item->value;
                         actual_weight+= item->weight;
+
+                        // keep track of how many items are used
+                        (*how_many)++;
                 }
                 else {
                         break;
